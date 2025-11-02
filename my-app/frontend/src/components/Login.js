@@ -12,23 +12,35 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMessage("");
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setMessage("");
 
-    try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", form);
-      setMessage(res.data.message || "Login successful!");
+  try {
+    const res = await axios.post("http://localhost:5000/api/auth/login", form);
+    const data = res.data;
+
+    if (res.status === 200 && data.token) {
+      // ✅ Store the token for future requests (e.g., password reset)
+      localStorage.setItem("token", data.token);
+
+      // (Optional) Store user info too
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setMessage("Login successful!");
 
       // ✅ Redirect to Dashboard
       setTimeout(() => {
         navigate("/dashboard");
       }, 1000);
-
-    } catch (err) {
-      setMessage(err.response?.data?.error || "Invalid credentials.");
+    } else {
+      setMessage(data.error || "Login failed.");
     }
-  };
+  } catch (err) {
+    setMessage(err.response?.data?.error || "Invalid credentials.");
+  }
+};
+
 
   return (
     <div className="d-flex min-vh-100">
@@ -44,7 +56,7 @@ export default function Login() {
           }}
         >
           <h2 className="fw-bold mb-3 text-primary text-center" style={{ fontSize: "1.8rem" }}>
-            Login to MyApp
+            Login to Arc Defender
           </h2>
           <p className="text-muted mb-4 text-center" style={{ fontSize: "1rem" }}>
             Welcome back! Please enter your details below.

@@ -40,7 +40,7 @@ export default function Register() {
             Create an Account
           </h2>
           <p className="text-muted mb-4 text-center" style={{ fontSize: "1rem" }}>
-            Join MyApp today — it only takes a minute!
+            Join Arc Defender today — it only takes a minute!
           </p>
 
           <form onSubmit={handleSubmit}>
