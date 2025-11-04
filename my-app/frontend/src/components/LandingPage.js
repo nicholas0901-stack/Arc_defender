@@ -74,7 +74,7 @@ export default function LandingPage() {
   className="relative flex flex-col items-center justify-center text-center px-6 z-10 min-h-[65vh] overflow-hidden"
 >
   {/* 🌍 Globe as Background Behind Headline */}
-  <div className="absolute top-[0%] left-[13%] -translate-x-1/2 -translate-y-1/2 w-[60vw] max-w-[500px] h-[350px] md:h-[420px] opacity-80 pointer-events-none z-0">
+  <div className="absolute top-[0%] left-[7%] -translate-x-1/2 -translate-y-1/2 w-[60vw] max-w-[500px] h-[350px] md:h-[420px] opacity-80 pointer-events-none z-0">
     <DefenseGlobe />
   </div>
 

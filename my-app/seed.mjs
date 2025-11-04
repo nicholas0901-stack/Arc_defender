@@ -3,6 +3,7 @@ import Metric from "./backend/models/Metric.js";
 import Alert from "./backend/models/Alert.js";
 import SystemStatus from "./backend/models/SystemStatus.js";
 import NetworkActivity from "./backend/models/NetworkActivity.js";
+import Threat from "./backend/models/Threat.js";
 
 console.log("🚀 Connecting to MongoDB...");
 await mongoose.connect("mongodb://localhost:27017/arc_defender", {
@@ -18,6 +19,7 @@ await Promise.all([
   Alert.deleteMany({}),
   SystemStatus.deleteMany({}),
   NetworkActivity.deleteMany({}),
+  Threat.deleteMany({}),
 ]);
 
 console.log("🧠 Inserting initial seed data...");
@@ -64,7 +66,7 @@ const alertMessages = [
   "Malware signature detected.",
   "Anomalous DNS activity detected.",
 ];
-const severities = ["low", "medium", "high"];
+const alertSeverities = ["low", "medium", "high"]; // ✅ renamed for clarity
 
 // 🔄 Every 10 seconds: update metrics + append activity + add alert
 setInterval(async () => {
@@ -81,7 +83,7 @@ setInterval(async () => {
     // 🧠 Random alert
     const alert = new Alert({
       message: alertMessages[Math.floor(Math.random() * alertMessages.length)],
-      severity: severities[Math.floor(Math.random() * severities.length)],
+      severity: alertSeverities[Math.floor(Math.random() * alertSeverities.length)],
     });
     await alert.save();
 
@@ -102,7 +104,30 @@ setInterval(async () => {
   }
 }, 10000); // every 10 seconds
 
-// Keep process alive
+// 🌐 Threat Simulation Section
+const threatTypes = ["Port Scan", "SQL Injection", "Phishing", "Malware Injection", "DDoS Flood"];
+const threatCategories = ["ddos", "malware", "phishing", "ransomware", "insider"];
+const threatSeverities = ["low", "medium", "high"];
+
+setInterval(async () => {
+  try {
+    const threat = new Threat({
+      timestamp: new Date(),
+      type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
+      category: threatCategories[Math.floor(Math.random() * threatCategories.length)],
+      severity: threatSeverities[Math.floor(Math.random() * threatSeverities.length)],
+      sourceIP: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+      count: Math.floor(Math.random() * 10) + 1,
+    });
+    await threat.save();
+
+    console.log(`⚔️  [${threat.severity.toUpperCase()}] ${threat.type} from ${threat.sourceIP} (${threat.category})`);
+  } catch (err) {
+    console.error("❌ Threat simulation error:", err.message);
+  }
+}, 12000); // every 12 seconds
+
+// 🛑 Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("\n🛑 Shutting down gracefully...");
   await mongoose.connection.close();

@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dashboardRoutes from "./routes/dashboard.js";
 import authRoutes from "./routes/auth.js";
+import threatRoutes from "./routes/threats.js";
+
 
 const app = express();
 
@@ -27,7 +29,7 @@ mongoose
 // ✅ Mount routes
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use("/api/threats", threatRoutes); // ✅ new
 // ✅ Debug route loading
 console.log("✅ Dashboard routes mounted at /api/dashboard");
 console.log("✅ Auth routes mounted at /api/auth");
@@ -48,6 +50,9 @@ app.use((err, req, res, next) => {
   console.error("💥 Server error:", err);
   res.status(500).json({ error: "Internal Server Error" });
 });
+
+
+
 
 // ✅ Start server
 const PORT = 5000;

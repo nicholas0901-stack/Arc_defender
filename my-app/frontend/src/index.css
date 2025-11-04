@@ -5,3 +5,26 @@
 body {
   @apply bg-[#050511] text-white;
 }
+.text-cyan {
+  color: #00ffff !important;
+}
+.btn:hover {
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
+}
+.text-gradient {
+  background: linear-gradient(90deg,#00ffff,#ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.text-gradient {
+  background: linear-gradient(90deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nav-link:hover {
+  color: #00ffff !important;
+  text-shadow: 0 0 8px #00ffff;
+  transform: translateX(4px);
+  transition: all 0.25s ease-in-out;
+}

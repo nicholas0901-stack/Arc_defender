@@ -23,13 +23,10 @@ export default function Topbar() {
 
       try {
         const res = await fetch("http://localhost:5000/api/auth/me", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.status === 401) {
-          console.warn("Unauthorized: clearing session");
           localStorage.clear();
           window.location.href = "/login";
           return;
@@ -48,7 +45,6 @@ export default function Topbar() {
   // 🔐 Handle password reset
   const handlePasswordReset = async (e) => {
     e.preventDefault();
-
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setStatus({ type: "error", message: "New passwords do not match." });
       return;
@@ -56,16 +52,14 @@ export default function Topbar() {
 
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        setStatus({ type: "error", message: "You must be logged in to reset your password." });
-        return;
-      }
+      if (!token)
+        return setStatus({ type: "error", message: "You must be logged in." });
 
       const res = await fetch("http://localhost:5000/api/auth/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Token included
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           currentPassword: passwordData.currentPassword,
@@ -74,7 +68,6 @@ export default function Topbar() {
       });
 
       const data = await res.json();
-
       if (res.ok) {
         setStatus({ type: "success", message: "Password updated successfully!" });
         setPasswordData({ currentPassword: "", newPassword: "", confirmPassword: "" });
@@ -85,7 +78,7 @@ export default function Topbar() {
           message: data.error || data.message || "Failed to reset password.",
         });
       }
-    } catch (err) {
+    } catch {
       setStatus({ type: "error", message: "Server error. Try again later." });
     }
   };
@@ -104,27 +97,61 @@ export default function Topbar() {
 
   return (
     <>
-      {/* === TOPBAR === */}
-      <div className="d-flex justify-content-between align-items-center bg-white shadow-sm px-4 py-3">
-        <h5 className="fw-bold mb-0 text-primary">Dashboard Overview</h5>
+      {/* 🌌 Immersive Topbar */}
+      <div
+        className="d-flex justify-content-between align-items-center px-4 py-3 position-sticky top-0"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(10,10,25,0.8) 0%, rgba(30,30,60,0.6) 50%, rgba(10,10,25,0.8) 100%)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(0,255,255,0.2)",
+          boxShadow: "0 0 20px rgba(0,255,255,0.15)",
+          zIndex: 999,
+        }}
+      >
+        {/* 🌠 Left Title */}
+        <h5
+          className="fw-bold mb-0 text-gradient"
+          style={{
+            background: "linear-gradient(90deg,#00ffff,#ff00ff)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            letterSpacing: "0.5px",
+          }}
+        >
+          Dashboard Overview
+        </h5>
 
+        {/* 🔔 User Controls */}
         <div className="d-flex align-items-center gap-4">
-          {/* 🔔 Notifications Button */}
+          {/* Notifications */}
           <button
             type="button"
-            className="btn btn-link text-muted p-0"
+            className="btn btn-link text-cyan p-0 position-relative"
             data-bs-toggle="modal"
             data-bs-target="#notificationsModal"
+            style={{
+              color: "#00ffff",
+              transition: "0.3s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff00ff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#00ffff")}
           >
             <FaBell size={22} />
           </button>
 
-          {/* 👤 User Button */}
+          {/* User */}
           <button
             type="button"
-            className="btn btn-link text-primary p-0 d-flex align-items-center"
+            className="btn btn-link p-0 d-flex align-items-center text-cyan"
             data-bs-toggle="modal"
             data-bs-target="#userModal"
+            style={{
+              color: "#00ffff",
+              transition: "0.3s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#ff00ff")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#00ffff")}
           >
             <FaUserCircle size={28} className="me-2" />
             <span className="fw-semibold">{user.name}</span>
@@ -141,27 +168,34 @@ export default function Topbar() {
         aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content rounded-4 shadow">
+          <div
+            className="modal-content rounded-4 shadow text-light"
+            style={{
+              background: "rgba(20,20,40,0.9)",
+              border: "1px solid rgba(0,255,255,0.2)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
             <div className="modal-header border-0">
-              <h5 className="modal-title fw-bold" id="notificationsModalLabel">
+              <h5 className="modal-title fw-bold text-cyan" id="notificationsModalLabel">
                 Notifications
               </h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close btn-close-white"
                 data-bs-dismiss="modal"
                 aria-label="Close"
               ></button>
             </div>
             <div className="modal-body">
-              <ul className="list-group list-group-flush">
-                <li className="list-group-item">
+              <ul className="list-group list-group-flush text-light">
+                <li className="list-group-item bg-transparent border-secondary">
                   🚨 Intrusion attempt detected from 192.168.1.45
                 </li>
-                <li className="list-group-item">
+                <li className="list-group-item bg-transparent border-secondary">
                   ✅ Firewall rules updated successfully
                 </li>
-                <li className="list-group-item">
+                <li className="list-group-item bg-transparent border-secondary">
                   ⚠️ High CPU usage detected on node-02
                 </li>
               </ul>
@@ -179,14 +213,21 @@ export default function Topbar() {
         aria-hidden="true"
       >
         <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content rounded-4 shadow border-0">
+          <div
+            className="modal-content rounded-4 text-light"
+            style={{
+              background: "rgba(20,20,40,0.9)",
+              border: "1px solid rgba(255,0,255,0.2)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
             <div className="modal-header border-0">
               <h5 className="modal-title fw-bold" id="userModalLabel">
                 {showReset ? "Reset Password" : "User Profile"}
               </h5>
               <button
                 type="button"
-                className="btn-close"
+                className="btn-close btn-close-white"
                 data-bs-dismiss="modal"
                 aria-label="Close"
                 onClick={() => {
@@ -199,18 +240,26 @@ export default function Topbar() {
             <div className="modal-body text-center">
               {!showReset ? (
                 <>
-                  <div className="d-flex flex-column align-items-center justify-content-center text-center mb-4 mt-2">
-                    <FaUserCircle size={100} className="text-primary mb-3" />
-
-                    {/* Username */}
-                    <h5 className="fw-bold mb-1 text-dark">{user.name}</h5>
-
-                    {/* Email */}
+                  <div className="d-flex flex-column align-items-center mb-4 mt-2">
+                    <FaUserCircle
+                      size={100}
+                      style={{
+                        color: "#00ffff",
+                        textShadow: "0 0 10px rgba(0,255,255,0.5)",
+                      }}
+                      className="mb-3"
+                    />
+                    <h5 className="fw-bold mb-1">{user.name}</h5>
                     <p className="text-muted mb-0">{user.email}</p>
                   </div>
                   <hr />
                   <button
-                    className="btn btn-outline-primary w-100 fw-semibold"
+                    className="btn w-100 fw-semibold text-white"
+                    style={{
+                      background:
+                        "linear-gradient(90deg, #00ffff, #ff00ff)",
+                      border: "none",
+                    }}
                     onClick={() => setShowReset(true)}
                   >
                     Manage Account
@@ -225,57 +274,40 @@ export default function Topbar() {
               ) : (
                 <form onSubmit={handlePasswordReset} className="text-start">
                   <div className="text-center mb-3">
-                    <FaLock size={40} className="text-primary mb-2" />
+                    <FaLock
+                      size={40}
+                      style={{
+                        color: "#00ffff",
+                        textShadow: "0 0 10px rgba(0,255,255,0.5)",
+                      }}
+                      className="mb-2"
+                    />
                     <h6 className="fw-bold">Reset Your Password</h6>
                   </div>
 
-                  <div className="mb-3">
-                    <label className="form-label">Current Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={passwordData.currentPassword}
-                      onChange={(e) =>
-                        setPasswordData({
-                          ...passwordData,
-                          currentPassword: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label">New Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={passwordData.newPassword}
-                      onChange={(e) =>
-                        setPasswordData({
-                          ...passwordData,
-                          newPassword: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
-
-                  <div className="mb-3">
-                    <label className="form-label">Confirm New Password</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      value={passwordData.confirmPassword}
-                      onChange={(e) =>
-                        setPasswordData({
-                          ...passwordData,
-                          confirmPassword: e.target.value,
-                        })
-                      }
-                      required
-                    />
-                  </div>
+                  {["currentPassword", "newPassword", "confirmPassword"].map((key, idx) => (
+                    <div className="mb-3" key={idx}>
+                      <label className="form-label text-light">
+                        {key === "currentPassword"
+                          ? "Current Password"
+                          : key === "newPassword"
+                          ? "New Password"
+                          : "Confirm New Password"}
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control bg-dark text-light border-secondary"
+                        value={passwordData[key]}
+                        onChange={(e) =>
+                          setPasswordData({
+                            ...passwordData,
+                            [key]: e.target.value,
+                          })
+                        }
+                        required
+                      />
+                    </div>
+                  ))}
 
                   {status && (
                     <div
@@ -290,12 +322,20 @@ export default function Topbar() {
                   <div className="d-flex justify-content-between mt-4">
                     <button
                       type="button"
-                      className="btn btn-secondary"
+                      className="btn btn-outline-secondary"
                       onClick={() => setShowReset(false)}
                     >
                       Back
                     </button>
-                    <button type="submit" className="btn btn-primary fw-semibold">
+                    <button
+                      type="submit"
+                      className="btn text-white fw-semibold"
+                      style={{
+                        background:
+                          "linear-gradient(90deg, #00ffff, #ff00ff)",
+                        border: "none",
+                      }}
+                    >
                       Update Password
                     </button>
                   </div>
