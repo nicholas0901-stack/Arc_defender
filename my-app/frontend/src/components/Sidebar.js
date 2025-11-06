@@ -57,7 +57,7 @@ export default function Sidebar() {
         {[
           { name: "Dashboard", icon: <FaTachometerAlt />, href: "/dashboard" },
           { name: "Threat Monitor", icon: <FaShieldAlt />, href: "/threat-monitor" },
-          { name: "Analytics", icon: <FaChartLine />, href: "#" },
+          { name: "Analytics", icon: <FaChartLine />, href: "/analytics" },
           { name: "User Control", icon: <FaUserShield />, href: "#" },
           { name: "Settings", icon: <FaCogs />, href: "#" },
         ].map((item, idx) => (

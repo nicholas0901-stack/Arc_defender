@@ -4,6 +4,7 @@ import cors from "cors";
 import dashboardRoutes from "./routes/dashboard.js";
 import authRoutes from "./routes/auth.js";
 import threatRoutes from "./routes/threats.js";
+import analyticsRoutes from "./routes/analytics.js";
 
 
 const app = express();
@@ -29,7 +30,9 @@ mongoose
 // ✅ Mount routes
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/threats", threatRoutes); // ✅ new
+app.use("/api/threats", threatRoutes); 
+app.use("/api/analytics", analyticsRoutes);
+
 // ✅ Debug route loading
 console.log("✅ Dashboard routes mounted at /api/dashboard");
 console.log("✅ Auth routes mounted at /api/auth");

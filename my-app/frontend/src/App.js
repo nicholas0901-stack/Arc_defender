@@ -5,6 +5,7 @@ import Register from "./components/Register";
 import Dashboard from "./components/Dashboard";
 import LandingPage from "./components/LandingPage";
 import ThreatMonitor from "./components/ThreatMonitor";
+import Analytics from "./components/Analytics";
 
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/threat-monitor" element={<ThreatMonitor />} />
+        <Route path="/analytics" element={<Analytics />} />
 
       </Routes>
     </Router>

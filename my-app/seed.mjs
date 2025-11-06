@@ -45,6 +45,7 @@ await SystemStatus.insertMany([
   { component: "Backup", status: "Scheduled 3AM" },
 ]);
 
+// 🌍 Network activity (7-day seed)
 const now = new Date();
 const initialActivities = [];
 for (let i = 6; i >= 0; i--) {
@@ -54,7 +55,27 @@ for (let i = 6; i >= 0; i--) {
   });
 }
 await NetworkActivity.insertMany(initialActivities);
+
+// 🌐 Threat Simulation — create initial timeline for analytics
+const threatTypes = ["Port Scan", "SQL Injection", "Phishing", "Malware Injection", "DDoS Flood"];
+const threatCategories = ["ddos", "malware", "phishing", "ransomware", "insider"];
+const threatSeverities = ["low", "medium", "high"];
+
+const threats = [];
+for (let i = 15; i >= 0; i--) {
+  threats.push({
+    timestamp: new Date(now.getTime() - i * 6 * 60 * 60 * 1000), // every 6 hours for history
+    type: threatTypes[Math.floor(Math.random() * threatTypes.length)],
+    category: threatCategories[Math.floor(Math.random() * threatCategories.length)],
+    severity: threatSeverities[Math.floor(Math.random() * threatSeverities.length)],
+    sourceIP: `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+    count: Math.floor(Math.random() * 8) + 1,
+  });
+}
+await Threat.insertMany(threats);
+
 console.log("✅ Seed complete! Starting live updates...");
+console.log("📡 Live metrics and threat analytics simulation running...");
 
 // ⚙️ Continuous Simulation Section
 const alertMessages = [
@@ -66,15 +87,21 @@ const alertMessages = [
   "Malware signature detected.",
   "Anomalous DNS activity detected.",
 ];
-const alertSeverities = ["low", "medium", "high"]; // ✅ renamed for clarity
+const alertSeverities = ["low", "medium", "high"];
 
-// 🔄 Every 10 seconds: update metrics + append activity + add alert
+// 🧮 Dynamic cumulative counters for analytics
+let totalBlocked = 1200;
+let totalThreats = 46;
+
+// 🔁 Every 10 seconds: update metrics, alerts, and activities
 setInterval(async () => {
   try {
-    // 🧮 Randomized metrics
+    totalBlocked += Math.floor(Math.random() * 10);
+    totalThreats = Math.floor(Math.random() * 80) + 20;
+
     const updatedMetric = {
-      activeThreats: Math.floor(Math.random() * 100) + 10,
-      blockedIntrusions: Math.floor(Math.random() * 2000) + 500,
+      activeThreats: totalThreats,
+      blockedIntrusions: totalBlocked,
       systemUptime: `${(99 + Math.random()).toFixed(2)}%`,
       usersOnline: Math.floor(Math.random() * 50) + 5,
     };
@@ -87,28 +114,21 @@ setInterval(async () => {
     });
     await alert.save();
 
-    // 🌍 Add new network activity
+    // 🌍 Network activity update
     const activity = new NetworkActivity({
       date: new Date(),
       intrusionsDetected: Math.floor(Math.random() * 200),
     });
     await activity.save();
 
-    // 🧾 Log summary
     console.log("📊 Live Update:");
     console.log("  - Metric:", updatedMetric);
-    console.log("  - Alert:", alert.message, `[${alert.severity}]`);
-    console.log("  - New Intrusions:", activity.intrusionsDetected);
   } catch (err) {
     console.error("❌ Live update error:", err.message);
   }
-}, 10000); // every 10 seconds
+}, 10000);
 
-// 🌐 Threat Simulation Section
-const threatTypes = ["Port Scan", "SQL Injection", "Phishing", "Malware Injection", "DDoS Flood"];
-const threatCategories = ["ddos", "malware", "phishing", "ransomware", "insider"];
-const threatSeverities = ["low", "medium", "high"];
-
+// 🌐 Threat Simulation Section — adds new threats regularly
 setInterval(async () => {
   try {
     const threat = new Threat({
@@ -121,11 +141,31 @@ setInterval(async () => {
     });
     await threat.save();
 
-    console.log(`⚔️  [${threat.severity.toUpperCase()}] ${threat.type} from ${threat.sourceIP} (${threat.category})`);
+    console.log(`⚔️ [${threat.severity.toUpperCase()}] ${threat.type} from ${threat.sourceIP} (${threat.category})`);
   } catch (err) {
     console.error("❌ Threat simulation error:", err.message);
   }
-}, 12000); // every 12 seconds
+}, 12000);
+
+// 🧠 Daily Trend Simulation — for analytics graphs
+setInterval(async () => {
+  try {
+    const simulatedDate = new Date();
+    const trendEntry = new Threat({
+      timestamp: simulatedDate,
+      type: "Aggregated Trend",
+      category: "analysis",
+      severity: ["low", "medium", "high"][Math.floor(Math.random() * 3)],
+      sourceIP: `10.0.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`,
+      count: Math.floor(Math.random() * 30) + 5,
+    });
+    await trendEntry.save();
+
+    console.log(`📈 Analytics trend point added: ${trendEntry.count} threats logged`);
+  } catch (err) {
+    console.error("❌ Trend simulation error:", err.message);
+  }
+}, 60000); // every 1 minute adds to analytics trend
 
 // 🛑 Graceful shutdown
 process.on("SIGINT", async () => {
